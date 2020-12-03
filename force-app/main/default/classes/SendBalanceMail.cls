@@ -1,13 +1,22 @@
-public with sharing class SendBalanceMail {
-    public static void sendBalanceMail(Id cId, Decimal bal) {
-
-        System.debug('Id'+ cId);
-        // String cName = c.Name;
-        // Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-        // mail.setToAddresses(new String[] {'paulawambui@gmail.com'});
-        // mail.setSubject('Thank you for your payment!');
-        // String messageBody = '<html><body> Dear ' + cName + ',<br/> We have successfully processed your payment. <br/>Your remaining balance is ' + bal +  '. <br/> Thank you for your business! <br/><br/> Mom Relaunch</body>  </html>';
-        // mail.setHtmlBody(messageBody); 
-        // Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+public class SendBalanceMail {
+  public static void balanceMail(String contName, Decimal bal) {
+      
+    System.debug('called' + contName);
+    
+    Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+    //mail.setToAddresses(new String[] {'paulawambui@gmail.com'});
+    mail.setToAddresses(new String[] {'mraccounting@momrelaunch.com','paulawambui@gmail.com'});
+    mail.setSubject('Thank you for your payment!');
+    String messageBody = '<html><body> Dear ' + contName + ',<br/><br/> We have successfully processed your payment.<br/> <br/>Your remaining balance is ' + bal +  '.<br/>Thank you for your business! <br/><br/> Mom Relaunch</body>  </html>';
+    String messageBody2 = '<html><body> Dear ' + contName + ',<br/><br/> We have successfully processed your payment<br/>.  <br/> Thank you for your business! <br/><br/> Mom Relaunch</body>  </html>';
+    
+    if(bal > 0){
+      mail.setHtmlBody(messageBody);
     }
+    else {
+      mail.setHtmlBody(messageBody2);
+    }
+    
+    Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+  }
 }
