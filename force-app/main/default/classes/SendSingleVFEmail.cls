@@ -1,9 +1,10 @@
-public class SendVFEmail {
-	public static void sendBatchInvoices(List<String> accList){
+public class SendSingleVFEmail {
+    @AuraEnabled(cacheable = true)
+
+    public static void sendSingleEmailLWC(String acc) {
         
-       System.debug('Got the list' + accList);
         String sMessage = '';
-        for(String acc :  accList){
+        
              try{    
                 System.debug(acc);
                 Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
@@ -27,7 +28,5 @@ public class SendVFEmail {
                 sMessage=ex.getMessage()+'\n'+ex.getLineNumber()+'\n'+ex.getCause();
                 System.debug('Error' + sMessage);
             }
-         }
-
-	}
+    }
 }
