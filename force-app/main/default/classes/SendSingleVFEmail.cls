@@ -1,12 +1,13 @@
 public class SendSingleVFEmail {
     @AuraEnabled(cacheable = true)
 
-    public static void sendSingleEmailLWC(String acc) {
+    public static String sendSingleEmailLWC(String acc) {
         
         String sMessage = '';
+        String msg = 'Sent sucessfully';
         
              try{    
-                System.debug(acc);
+                System.debug('Received '+ acc);
                 Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
                 Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
                 // Replace Visualforce(AccountDetails) page with your visualforce page
@@ -28,5 +29,6 @@ public class SendSingleVFEmail {
                 sMessage=ex.getMessage()+'\n'+ex.getLineNumber()+'\n'+ex.getCause();
                 System.debug('Error' + sMessage);
             }
+          return msg;  
     }
 }

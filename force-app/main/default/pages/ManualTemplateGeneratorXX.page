@@ -43,7 +43,7 @@
 </style>
 </head>
         <apex:stylesheet value="{!$Resource.pdfstyle1}"/>
-        <apex:image url="{!$Resource.MR_Logo}" height="100" width="350"/>
+        <apex:image url="{!$Resource.MRLogo}" height="100" width="350"/>
         <p style="margin-bottom:30px;padding-top:10px;margin-top:-10px"></p>
    
 
@@ -175,7 +175,7 @@
             <apex:outputText >5949 Via Del Cielo</apex:outputText><br/>
             <apex:outputText >Pleasanton, CA 94566 US </apex:outputText><br/>
             <apex:outputText >(615) 371-6191</apex:outputText><br/>
-            <apex:outputText >accounting@avankia.com</apex:outputText>
+            <apex:outputText >accounting@momrelaunch.com</apex:outputText>
          </p>
 
          

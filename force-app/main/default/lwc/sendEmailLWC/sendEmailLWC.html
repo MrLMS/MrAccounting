@@ -21,30 +21,22 @@
             </div>
             </header>
             </div>
-
+            </div>
 
             <div class="slds-card__body slds-card__body_inner">
                
-                <lightning-textarea name="to" label="To"></lightning-textarea>
+                <lightning-textarea name="to" label="To" value={contactEmail} disabled="true"></lightning-textarea>
+                <lightning-textarea name="additionalTo" label="Additional To"></lightning-textarea>
                 <lightning-textarea name="cc" label="CC"></lightning-textarea>
-                <lightning-textarea name="subject" label="Subject"></lightning-textarea>
-                 <lightning-input-rich-text placeholder="Type your message here"></lightning-input-rich-text>
+                <lightning-textarea name="subject" label="Subject" value={subject}></lightning-textarea>
+                 <lightning-input-rich-text placeholder={body} onclick={handleClick}></lightning-input-rich-text>
             
             <div class="slds-m-top_small slds-m-bottom_medium">   
             <lightning-button variant="brand" label="Send Email" title="Primary action" onclick={handleSend} class="slds-m-left_x-small"></lightning-button>
             <lightning-button variant="brand" label="Cancel" title="Primary action" onclick={handleCancel} class="slds-m-left_x-small"></lightning-button>
             </div>
             </div>
-            </div>
         </article>  
-        <lightning-record-view-form record-id={recordId} object-api-name="Account">
-            <div class="slds-grid">
-                <div class="slds-col slds-size_1-of-2">
-                    <lightning-output-field field-name="Name"></lightning-output-field>
-
-                </div>
-                
-            </div>
-        </lightning-record-view-form>       
+             
     </lightning-card>
 </template>

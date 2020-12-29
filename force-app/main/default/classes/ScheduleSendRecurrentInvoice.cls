@@ -1,15 +1,21 @@
 global class ScheduleSendRecurrentInvoice implements Schedulable {
     global void execute(SchedulableContext sc){
-        List<AVAB__SO_Document__c> recList = [select Id from AVAB__SO_Document__c where AVAB__Recurring_Period__c = 'Monthly'];
+        List<String> recList = AutoCreateInvoices.generateInvoices();
         List<String> accList = new List<String>();
-        for(AVAB__SO_Document__c rec : recList){
+        System.debug('Received list' + recList);
+        
+        List<AVAB__SO_Document__c> invoiceIDs = [SELECT Id FROM AVAB__SO_Document__c where Name  IN : recList];
+        System.debug('IDs '+ invoiceIDs);
+        
+        for(AVAB__SO_Document__c rec : invoiceIDs){
             String accId = rec.Id;
-            accList.Add(accId);
+            accList.add(accId);
         
         }
         System.debug(accList);
         try{
         SendVFEmail.sendBatchInvoices(accList);
+        System.debug('Sent');
         }
         catch(Exception e)
         {
