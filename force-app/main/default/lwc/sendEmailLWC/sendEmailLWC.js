@@ -1,7 +1,9 @@
-import { LightningElement, api, wire, track } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import sendSingleEmailLWC from '@salesforce/apex/SendSingleVFEmail.sendSingleEmailLWC';
 import getInvoiceDetails from '@salesforce/apex/GetInvoiceDetails.getInvoiceDetails';
-export default class SendEmailLWC extends LightningElement {
+import { ShowToastEvent } from 'lightning/platformShowToastEvent'
+
+export default class SendEmailLWC extends  LightningElement {
     @api flexipageRegionWidth = 'LARGE';
     @api recordId;
     @track error;
@@ -9,11 +11,13 @@ export default class SendEmailLWC extends LightningElement {
     
     
     invoiceNum = '';
-    contactEmail = '';
+    
     contactName = '';
+    toEmail;
     subject = '';
     body = '';
-    
+    additionalTo = '';
+    CC = '';
     
     
     renderedCallback(){
@@ -26,15 +30,17 @@ export default class SendEmailLWC extends LightningElement {
                 .then(result => {
                     console.log('Results are ' + JSON.stringify(result));
                     
-                    this.contactEmail = result.Email;
+                    this.toEmail = result.Email;
                     this.invoiceNum = result.Invoice;
                     this.contactName = result.Contact;
-                    console.log('Email ' + this.contactEmail);
+                    
+                    this.subject = 'Attn: '+ this.contactName + ' for Invoice ' + this.invoiceNum;
+                    //this.body = 'Please find the attached invoice. \n';
+                    this.error = undefined;
+
+                    console.log('Email ' + this.toEmail);
                     console.log('Contact ' + this.contactName);
                     console.log('Invoice Number ' + this.invoiceNum);
-                    this.subject = 'Attn: '+ this.contactName + ' for Invoice ' + this.invoiceNum;
-                    this.body = 'Find the attached invoice. \n';
-                    this.error = undefined;
                 })
                 .catch(err => {
                     console.log('Error found '+ err);
@@ -49,12 +55,57 @@ export default class SendEmailLWC extends LightningElement {
         const editor = this.template.querySelector('lightning-input-rich-text');
         editor.setRangeText('');
     }
-    
+    handleToChange(event){
+        this.toEmail = event.target.value;
+    }
+
+    handleAdditionalToChange(event){
+       this.additionalTo = event.target.value; 
+    }
+
+    handleCCChange(event){
+        this.CC = event.target.value;
+    }
+    handleSubjectChange(event){
+        this.subject = event.target.value;
+    }
+
+    handleBodyChange(event){
+        this.body = event.target.value;
+    }
     
    handleSend(){
-        sendSingleEmailLWC({acc: this.recordId})
+
+    let parameterObject = {'contEmail' : this.toEmail,
+                                'addTo' : this.additionalTo,
+                                'acc' : this.recordId,
+                                'ccEmail' : this.CC,
+                                'subject' : this.subject,
+                                'body' : this.body};
+
+    
+        
+        sendSingleEmailLWC({params: parameterObject})
         .then(result => {
-               console.log('Result is '+ JSON.stringify(result));
+            console.log('Result is '+ JSON.stringify(result));
+            const event = new ShowToastEvent({
+                "title": " Success!",
+                "message": "Email sent successfully!"
+            });
+            this.dispatchEvent(event)   ;
+            window.location.assign('/'+this.recordId);
+
+        const inputFields = this.template.querySelectorAll(
+            '.inputClass'
+        );
+        if (inputFields) {
+            inputFields.forEach(field => {
+                field.value = null;
+            });
+            const selectElement = this.template.querySelector('lightning-input-rich-text');
+            selectElement.value  = "";
+            
+        }   
         })
         .catch(err => {
             this.error = err;  
@@ -62,7 +113,9 @@ export default class SendEmailLWC extends LightningElement {
         })
    }
        
-   
+   handleCancel(){
+    window.location.assign('/'+this.recordId);
+   }
     
     
 }

@@ -116,7 +116,7 @@
 
                     <tr>
                         <td style="text-align:left">{!it.AVAB__Product__r.Name}</td>
-                        <td style="width:50%;text-align:left;">{!it.AVAB__Product_Description__c}
+                        <td style="width:50%;text-align:left;">{!it.Dynamic_Product_Description__c}
                            
                          </td>
                          <td>

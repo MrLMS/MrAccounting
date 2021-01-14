@@ -25,4 +25,5 @@ public  class GetInvoiceDetails {
 
         return mapDetails;
     }
+    
 }

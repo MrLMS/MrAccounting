@@ -2,6 +2,8 @@
     <apex:includeLightning />    
     <div id="LightningComponentid" />    
     <script>
+       
+
          var accountId = "{!$CurrentPage.parameters.id}";
          console.log('Got '+ accountId);
     $Lightning.use("c:SendInvoiceEmailApp", function() {

@@ -25,11 +25,11 @@
 
             <div class="slds-card__body slds-card__body_inner">
                
-                <lightning-textarea name="to" label="To" value={contactEmail} disabled="true"></lightning-textarea>
-                <lightning-textarea name="additionalTo" label="Additional To"></lightning-textarea>
-                <lightning-textarea name="cc" label="CC"></lightning-textarea>
-                <lightning-textarea name="subject" label="Subject" value={subject}></lightning-textarea>
-                 <lightning-input-rich-text placeholder={body} onclick={handleClick}></lightning-input-rich-text>
+                <lightning-textarea name="to" label="To" value={toEmail} onchange={handleToChange} class="inputClass"></lightning-textarea>
+                <lightning-textarea name="additionalTo" label="Additional To" onchange={handleAdditionalToChange} class="inputClass"></lightning-textarea>
+                <lightning-textarea name="cc" label="CC" onchange={handleCCChange} class="inputClass"></lightning-textarea>
+                <lightning-textarea name="subject" label="Subject" value={subject} onchange={handleSubjectChange} class="inputClass"></lightning-textarea>
+                 <lightning-input-rich-text placeholder={body} onclick={handleClick} onchange={handleBodyChange}></lightning-input-rich-text>
             
             <div class="slds-m-top_small slds-m-bottom_medium">   
             <lightning-button variant="brand" label="Send Email" title="Primary action" onclick={handleSend} class="slds-m-left_x-small"></lightning-button>

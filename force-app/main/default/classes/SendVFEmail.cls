@@ -1,8 +1,8 @@
 public class SendVFEmail {
     @future(callout=true)
-    public  static void sendBatchInvoices(List<String> accList){
+    public static void sendBatchInvoices(List<String> accList){
         //public  void sendBatchInvoices(){   
-        System.debug('Got accounts the list' + accList);
+        System.debug('Got the accounts  list' + accList);
         String sMessage = '';
         //List<String> accList = new List<String> {'a2D0m000002PjBlEAK', 'a2D0m000002PjBmEAK', 'a2D0m000002PjBnEAK', 'a2D0m000002PjBoEAK', 'a2D0m000002PjBpEAK'};
         for(String acc :  accList){
@@ -17,17 +17,25 @@ public class SendVFEmail {
                 // Replace Visualforce(AccountDetails) page with your visualforce page
                 
                 PageReference pageref = new PageReference('/apex/ManualTemplateGeneratorXX?id=' + acc);
-                //pref.getParameters().put('id',AccountId);
-            // pref.setRedirect(true);
-                Blob b = pageref.getContentAsPDF();
-                attach.setFileName('Invoice.pdf');
-                attach.setBody(b);
-                semail.setSubject('Account Details');
-                semail.setToAddresses(new List<String>{contEmail});
-                semail.setPlainTextBody('Please find the attached Invoice');
-                semail.setFileAttachments(new Messaging.EmailFileAttachment[]{attach});
-                Messaging.sendEmail(new Messaging.SingleEmailMessage[]{semail});
-                sMessage='SUCCESS';
+            
+                Blob b;
+                if(Test.isRunningTest()){
+                    b = blob.valueOf('Unit.Test');
+                }
+                else {
+               
+                    b = pageref.getContentAsPDF();
+                }
+                 attach.setFileName('Invoice.pdf');
+                 attach.setBody(b);
+                 semail.setSubject('Account Details');
+                 semail.setToAddresses(new List<String>{contEmail});
+                 semail.setPlainTextBody('Please find the attached Invoice');
+                 semail.setFileAttachments(new Messaging.EmailFileAttachment[]{attach});
+                 Messaging.sendEmail(new Messaging.SingleEmailMessage[]{semail});
+                 
+                 System.debug('Email Sent Successfully!');
+                
              }
             catch(Exception ex){
                 sMessage=ex.getMessage()+'\n'+ex.getLineNumber()+'\n'+ex.getCause();
