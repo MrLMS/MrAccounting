@@ -89,29 +89,26 @@ export default class SendEmailLWC extends LightningElement {
         //     }, delay );
       })
       .then(() => {
-        const toField = this.template.querySelector(".toClass");
-        const addTo = this.template.querySelector(".addToClass");
-        const ccField = this.template.querySelector(".ccClass");
-        const subField = this.template.querySelector(".subClass");
-
-        toField.value = "";
-        addTo.value = "";
-        ccField.value = "";
-        subField.value = "";
-
-        const selectElement = this.template.querySelector(
-          "lightning-input-rich-text"
-        );
-        selectElement.value = "";
+        const inputFields = this.template.querySelectorAll(".inputClass");
+        if (inputFields) {
+          inputFields.forEach((field) => {
+            field.value = null;
+          });
+          const selectElement = this.template.querySelector(
+            "lightning-input-rich-text"
+          );
+          selectElement.value = "";
+        }
       })
+
       .then(() => {
         console.log("Success!");
         window.location.assign("/" + this.recordId);
       })
       .catch((err) => {
         this.error = err;
-        //console.log('Error occured '+ err.body.message);
-        console.log("Error occured ");
+        console.log("Error occured " + err);
+        //console.log("Error occured ");
       });
   }
 
