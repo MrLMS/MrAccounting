@@ -1,21 +1,20 @@
 @IsTest
-public class TestDataFactory {
-  public static List<AVAB__SO_Document__c> createInvoicesBasedOnNumOfContacts(
-    Integer numOfContacts
-  ) {
-    //Decimal bal = 100;
+public class RetrieveAmountAppliedToInvoiceTest {
+  @IsTest
+  static void retrieveAmountApplied() {
     List<Contact> contList = new List<Contact>();
     List<AVAB__SO_Document__c> invList = new List<AVAB__SO_Document__c>();
-    List<AVAB__Transaction_Line_Items__c> transLItemList = new List<AVAB__Transaction_Line_Items__c>();
+    List<AVAB__Payments_to_Invoice__c> listOfPayments = new List<AVAB__Payments_to_Invoice__c>();
+    Decimal val = 10;
+    Integer i = 0;
 
     Account acc = new Account(Name = 'Test Account');
     insert acc;
 
-    for (Integer j = 0; j < numOfContacts; j++) {
+    for (Integer j = 0; j < 3; j++) {
       Contact c = new Contact();
       c.LastName = 'contTest1' + j;
       c.AccountId = acc.Id;
-      c.Email = 'mracctbook2020@gmail.com';
       contList.add(c);
     }
     insert contList;
@@ -48,8 +47,9 @@ public class TestDataFactory {
     ];
 
     for (AVAB__SO_Document__c invoice : insertedInvoices) {
-      invoice.AVAB__Amount__c = 50;
+      invoice.AVAB__Amount__c = val;
       invoice.AVAB__Status__c = 'Post';
+      val = val + 10;
     }
 
     try {
@@ -58,6 +58,26 @@ public class TestDataFactory {
       System.debug('Error found ' + e.getMessage());
     }
 
-    return insertedInvoices;
+    for (AVAB__SO_Document__c inv : insertedInvoices) {
+      AVAB__Payments_to_Invoice__c payment = new AVAB__Payments_to_Invoice__c();
+      payment.AVAB__Receivable__c = inv.Id;
+      payment.AVAB__Amount__c = 20;
+      listOfPayments.add(payment);
+    }
+    Database.SaveResult[] sr = Database.insert(listOfPayments, false);
+
+    for (Database.SaveResult sres : sr) {
+      if (sres.isSuccess()) {
+        i = i + 1;
+      }
+    }
+
+    System.debug('Success = ' + i);
+
+    System.assertEquals(
+      3,
+      listOfPayments.size(),
+      'Did not create 3 payments to invoice'
+    );
   }
 }
