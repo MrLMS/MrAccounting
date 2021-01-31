@@ -1,0 +1,43 @@
+<template>
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      List of Invoices
+    </h2>
+
+    <!-- With an icon -->
+    <div class="slds-p-around_medium lgc-bg">
+      <lightning-tile label="Select Invoice to Apply Payment" type="media">
+        <lightning-icon
+          slot="media"
+          icon-name="standard:account"
+        ></lightning-icon>
+      </lightning-tile>
+    </div>
+  </div>
+
+  <lightning-record-view-form
+    record-id="0010m00000a4I2j"
+    object-api-name="List of Invoices"
+  >
+    <div class="slds-card">
+      <div class="slds-p-around_medium">
+        <lightning-card>
+          <template if:true={invoices}>
+            <lightning-datatable
+              data={invoices}
+              columns={columns}
+              key-field="Id"
+              onrowaction={handleRowAction}
+              default-sort-direction={defaultSortDirection}
+              sorted-direction={sortDirection}
+              sorted-by={sortedBy}
+              onsort={updateColumnSorting}
+            >
+            </lightning-datatable>
+          </template>
+          <template if:true={error}> {error } </template>
+        </lightning-card>
+      </div>
+    </div>
+  </lightning-record-view-form>
+</template>
