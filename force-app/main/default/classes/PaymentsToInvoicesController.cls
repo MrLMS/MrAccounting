@@ -44,6 +44,8 @@ public with sharing class PaymentsToInvoicesController {
     public String paymentID { get; set; }
     @AuraEnabled
     public String invoiceNumber { get; set; }
+    @AuraEnabled
+    public Decimal applyAmount { get; set; }
   }
 
   @AuraEnabled
@@ -52,6 +54,7 @@ public with sharing class PaymentsToInvoicesController {
   ) {
     String invoice = paymentWrapper.invoiceNumber;
     String paymentId = paymentWrapper.paymentID;
+    Decimal amountToApply = paymentWrapper.applyAmount;
 
     String invID;
 
@@ -59,46 +62,58 @@ public with sharing class PaymentsToInvoicesController {
 
     System.debug('Invoice received ' + invoice);
     System.debug('Payment Id received ' + paymentId);
-
-    List<AVAB__Payments__c> payments = [
-      SELECT AVAB__Amount__c
-      FROM AVAB__Payments__c
-      WHERE Id = :paymentId
-    ];
-    List<AVAB__SO_Document__c> selectedInvoices = [
-      SELECT Id, AVAB__Credit_Memo_Amount__c
-      FROM AVAB__SO_Document__c
-      WHERE Name = :invoice
-    ];
-
-    System.debug('List inv ' + selectedInvoices);
-
-    for (AVAB__Payments__c payment : payments) {
-      for (AVAB__SO_Document__c inv : selectedInvoices) {
-        AVAB__Payments_to_Invoice__c newPayment = new AVAB__Payments_to_Invoice__c();
-        newPayment.AVAB__Receivable__c = inv.Id;
-        newPayment.AVAB__Amount__c = payment.AVAB__Amount__c;
-
-        invID = inv.Id;
-
-        paymentsList.add(newPayment);
-        payment.AVAB__Payments_Applied__c = payment.AVAB__Amount__c;
-
-        System.debug('amount ' + inv.AVAB__Credit_Memo_Amount__c);
-      }
-    }
-
-    try {
-      insert paymentsList;
-      update payments;
-      AVAB__SO_Document__c insertedInvoice = [
-        SELECT AVAB__Balance__c
-        FROM AVAB__SO_Document__c
-        WHERE Id = :invID
+    if (amountToApply > 0) {
+      List<AVAB__Payments__c> payments = [
+        SELECT AVAB__Amount__c, AVAB__Payments_Applied__c
+        FROM AVAB__Payments__c
+        WHERE Id = :paymentId
       ];
-      System.debug('Updated Invoice Balance ' + insertedInvoice);
-    } catch (Exception e) {
-      System.debug('Error occured ' + e.getMessage());
+      List<AVAB__SO_Document__c> selectedInvoices = [
+        SELECT Id
+        FROM AVAB__SO_Document__c
+        WHERE Name = :invoice
+      ];
+
+      System.debug('applied payements ' + payments);
+      System.debug('List inv ' + selectedInvoices);
+
+      for (AVAB__Payments__c payment : payments) {
+        for (AVAB__SO_Document__c inv : selectedInvoices) {
+          if (payment.AVAB__Payments_Applied__c == null) {
+            payment.AVAB__Payments_Applied__c = 0;
+          }
+
+          if (payment.AVAB__Payments_Applied__c < payment.AVAB__Amount__c) {
+            AVAB__Payments_to_Invoice__c newPayment = new AVAB__Payments_to_Invoice__c();
+            newPayment.AVAB__Receivable__c = inv.Id;
+            newPayment.AVAB__Amount__c = amountToApply;
+            newPayment.AVAB__Payment__c = payment.Id;
+
+            invID = inv.Id;
+
+            payment.AVAB__Payments_Applied__c = amountToApply;
+            paymentsList.add(newPayment);
+          } else {
+            System.debug('You have over applied payments');
+          }
+        }
+      }
+
+      try {
+        insert paymentsList;
+        update payments;
+        // AVAB__SO_Document__c insertedInvoice = [
+        //   SELECT AVAB__Balance__c
+        //   FROM AVAB__SO_Document__c
+        //   WHERE Id = :invID
+        // ];
+
+        //AVAB__Payments_to_Invoice__c paylist = [SELECT Name FROM AVAB__Payments_to_Invoice__c WHERE Id IN :paymentsList];
+        //System.debug('payments to invoice ' + paylist);
+        //System.debug('Updated Invoice Balance ' + insertedInvoice);
+      } catch (Exception e) {
+        System.debug('Error occured ' + e.getMessage());
+      }
     }
   }
 }

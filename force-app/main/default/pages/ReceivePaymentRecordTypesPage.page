@@ -1,0 +1,20 @@
+<apex:page showHeader="false" sidebar="false" readOnly="false">
+  <apex:includeLightning />
+  <div id="LightningComponentid" />
+  <script>
+    //var recordType = "{!$CurrentPage.parameters.ent}";
+    // var accID = "{!$CurrentPage.parameters.aid}";
+    // console.log("Payment ID " + paymentID);
+    // console.log("Received account ID : " + accID);
+    $Lightning.use("c:ReceivePaymentRecordTypesApp", function () {
+      $Lightning.createComponent(
+        "c:receivePaymentRecordTypes",
+        {},
+        "LightningComponentid",
+        function (cmp) {
+          console.log("LWC Component added in VF page");
+        }
+      );
+    });
+  </script>
+</apex:page>

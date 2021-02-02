@@ -1,6 +1,7 @@
 import { LightningElement, api, track, wire } from "lwc";
 import getPaymentsToInvoice from "@salesforce/apex/PaymentsToInvoicesController.getPaymentsToInvoice";
 import applyPaymentToInvoice from "@salesforce/apex/PaymentsToInvoicesController.applyPaymentToInvoice";
+//import { getRecord, getRecordNotifyChange } from 'lightning/uiRecordApi';
 
 const actions = [{ label: "Apply Payment", name: "apply_Payment" }];
 
@@ -11,6 +12,8 @@ export default class ApplyPaymentLWC extends LightningElement {
   @track sortedDirection;
   @track invoices;
   @track error;
+  amount;
+  visible = false;
 
   @track columns = [
     { label: "Contact", fieldName: "contactName", sortable: true },
@@ -38,8 +41,8 @@ export default class ApplyPaymentLWC extends LightningElement {
   wiredInvoices({ error, data }) {
     if (data) {
       this.invoices = data;
+      //getRecordNotifyChange([{recordId: this.recordId}]);
 
-      // console.log('Invoices returned '+ JSON.stringify(this.invoices));
       this.error = undefined;
     } else if (error) {
       this.invoices = undefined;
@@ -64,7 +67,7 @@ export default class ApplyPaymentLWC extends LightningElement {
     };
 
     // checking reverse direction
-    let isReverse = direction === "asc" ? 1 : -1;
+    let isReverse = direction === "desc" ? 1 : -1;
 
     // sorting data
     parseData.sort((x, y) => {
@@ -79,22 +82,41 @@ export default class ApplyPaymentLWC extends LightningElement {
     this.invoices = parseData;
   }
 
+  handleAmountChange(event) {
+    this.amount = event.detail.value;
+  }
+
   handleRowAction(event) {
     const row = event.detail.row;
     let selectedInvoice = row.invoice;
-    console.log("Selected invoice " + selectedInvoice);
 
-    this.requestApplyPayments(selectedInvoice);
+    let amountCmp = this.template.querySelector(".inputClass");
+    let amountValue = amountCmp.value;
+
+    console.log("Selected invoice " + selectedInvoice);
+    if (!amountValue) {
+      amountCmp.setCustomValidity("You must enter the amount to apply");
+      amountCmp.reportValidity();
+    } else {
+      this.requestApplyPayments(selectedInvoice, this.amount);
+    }
   }
 
-  requestApplyPayments(selInvoice) {
-    let req = { paymentID: this.recordId, invoiceNumber: selInvoice };
+  requestApplyPayments(selInvoice, amount) {
+    let req = {
+      paymentID: this.recordId,
+      invoiceNumber: selInvoice,
+      applyAmount: amount
+    };
 
     console.log(req);
 
     applyPaymentToInvoice({ paymentWrapper: req })
       .then(() => {
+        this.visible = true;
         console.log("Sent Successfully");
+      })
+      .then(() => {
         window.location.assign("/" + this.recordId);
       })
       .catch((error) => {
