@@ -1,31 +1,39 @@
 <template>
-  <lightning-card title="New Receive Payment">
-    <lightning-layout multiple-rows="true" vertical-align="end">
-      <lightning-layout-item
-        size="6"
-        small-device-size="2"
-        medium-device-size="4"
-        large-device-size="4"
-        padding="around-small"
-      >
-        <div class="slds-form-element">
-          <div class="slds-form-element__control">
-            <lightning-combobox
-              name="recordTypes"
-              label="Receive Payment Record Types"
-              value={selectedValue}
-              placeholder="-Select-"
-              options={options}
-              onchange={handleChange}
-            ></lightning-combobox>
+  <div class="container">
+    <lightning-card title="New Receive Payment">
+      <lightning-layout multiple-rows="true" vertical-align="end">
+        <lightning-layout-item
+          size="6"
+          small-device-size="2"
+          medium-device-size="4"
+          large-device-size="4"
+          padding="around-small"
+        >
+          <div class="slds-form-element">
+            <div class="slds-form-element__control">
+              <lightning-combobox
+                name="recordTypes"
+                label="Select Mode of Payment"
+                value={selectedValue}
+                placeholder="-Select-"
+                options={options}
+                onchange={handleChange}
+                class="details3"
+              ></lightning-combobox>
+            </div>
           </div>
-        </div>
-      </lightning-layout-item> </lightning-layout
-    ><br />
-    <div style="margin-left: 3%">
-      <div if:true={selectedValue}>
-        Selected Record Type Id: <b>{selectedValue}</b>
+        </lightning-layout-item> </lightning-layout
+      ><br />
+
+      <div class="slds-var-m-around_medium">
+        <c-receive-payment-l-w-c></c-receive-payment-l-w-c>
       </div>
-    </div>
-  </lightning-card>
+
+      <div style="margin-left: 3%">
+        <div if:true={selectedValue}>
+          Selected Record Type Id: <b>{selectedValue}</b>
+        </div>
+      </div>
+    </lightning-card>
+  </div>
 </template>

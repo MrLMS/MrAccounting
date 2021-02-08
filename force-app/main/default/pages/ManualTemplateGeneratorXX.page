@@ -155,8 +155,12 @@
         <tr>
           <td style="text-align: left">{!it.AVAB__Product__r.Name}</td>
           <td style="width: 50%; text-align: left">
-            {!it.Dynamic_Product_Description__c}
+            <apex:outputText
+              value="{!IF(ISBLANK(it.Dynamic_Product_Description__c), it.AVAB__Product_Description__c, it.Dynamic_Product_Description__c )}"
+            >
+            </apex:outputText>
           </td>
+
           <td>
             <apex:outputText value="${0, number, ###,###,###,##0.00}">
               <apex:param value="{!it.AVAB__Sales_Price__c}" />

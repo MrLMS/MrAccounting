@@ -11,7 +11,7 @@ export default class RecordTypesInLWC extends LightningElement {
 
   // object info using wire service
   @wire(getObjectInfo, { objectApiName: PAYMENT_OBJECT })
-  accObjectInfo({ data, error }) {
+  paymentObjectInfo({ data, error }) {
     if (data) {
       let optionsValues = [];
       // map of record type Info

@@ -1,1 +1,75 @@
-<template> </template>
+<template>
+  <lightning-card>
+    <div class="slds-border_top">
+      <div class="headingClass">Cash Payment Details</div>
+    </div>
+    <lightning-record-edit-form
+      record-id={selectedValue}
+      object-api-name="AVAB__Payments__c"
+    >
+      <lightning-messages></lightning-messages>
+      <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_7-of-12">
+          <span>
+            <lightning-input-field
+              field-name="AVAB__Account_Name__c"
+              class="detailsClass"
+            ></lightning-input-field>
+            <lightning-input-field
+              field-name="AVAB__Bill_To_Name__c"
+              class="detailsClass"
+            ></lightning-input-field>
+            <lightning-input-field
+              field-name="AVAB__Transaction_Date_Time__c"
+              class="detailsClass"
+            ></lightning-input-field>
+            <lightning-input-field
+              field-name="AVAB__GL_Account__c"
+              class="detailsClass"
+            ></lightning-input-field>
+            <lightning-input-field
+              field-name="AVAB__Amount__c"
+              class="detailsClass"
+            ></lightning-input-field>
+          </span>
+        </div>
+        <div class="slds-col slds-size_5-of-12">
+          <span>
+            <lightning-output-field
+              field-name="OwnerId"
+              class="details2"
+            ></lightning-output-field>
+            <lightning-input-field
+              field-name="AVAB__Stage__c"
+              class="details2"
+            ></lightning-input-field>
+            <lightning-input-field
+              field-name="AVAB__Payments_Applied__c"
+              class="details2"
+            ></lightning-input-field>
+            <lightning-input-field
+              field-name="AVAB__Notes__c"
+              class="details2"
+            ></lightning-input-field>
+          </span>
+        </div>
+      </div>
+
+      <div class="headingClass2">DBSync</div>
+
+      <lightning-input-field
+        field-name="AVAB__Integration_Control__c"
+        class="details4"
+      ></lightning-input-field>
+      <lightning-input-field
+        field-name="AVAB__Ext_Record_Id__c"
+        class="details4"
+      ></lightning-input-field>
+      <lightning-input-field
+        field-name="AVAB__Error__c"
+        class="details4"
+      ></lightning-input-field>
+    </lightning-record-edit-form>
+    <p slot="footer">Card Footer</p>
+  </lightning-card>
+</template>

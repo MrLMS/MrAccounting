@@ -1,0 +1,26 @@
+.headingClass {
+  font-size: larger;
+  padding: 0.5cm;
+  padding-left: 1cm;
+}
+.detailsClass {
+  padding-left: 2cm;
+  width: 70%;
+}
+.details2 {
+  padding-right: 4cm;
+}
+.details3 {
+  padding-left: 0.5cm;
+}
+.headingClass2 {
+  width: 100%;
+  padding-top: 0.2cm;
+  padding-bottom: 0.5;
+  padding-left: 1cm;
+  font-size: larger;
+}
+.details4 {
+  padding-left: 2cm;
+  width: 41%;
+}

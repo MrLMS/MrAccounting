@@ -41,7 +41,7 @@ export default class SendEmailLWC extends LightningElement {
           console.log("Invoice Number " + this.invoiceNum);
         })
         .catch((err) => {
-          console.log("Error found " + err);
+          console.log("Error found " + err.body.message);
           this.error = err;
         });
     }

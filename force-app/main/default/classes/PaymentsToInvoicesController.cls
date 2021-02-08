@@ -1,13 +1,11 @@
 public with sharing class PaymentsToInvoicesController {
   @AuraEnabled(cacheable=true)
-  public static List<PaymentsToInvoicesController.invoiceDetailsWrapper> getPaymentsToInvoice(
+  public static List<PaymentsToInvoicesController.InvoiceDetailsWrapper> getPaymentsToInvoice(
     String accID
   ) {
     System.debug('Received account ' + accID);
 
-    //Id accID = '0010m00000a4I2j';
-
-    List<PaymentsToInvoicesController.invoiceDetailsWrapper> invoiceDetailsWrapperList = new List<PaymentsToInvoicesController.invoiceDetailsWrapper>();
+    List<PaymentsToInvoicesController.InvoiceDetailsWrapper> invoiceDetailsWrapperList = new List<PaymentsToInvoicesController.InvoiceDetailsWrapper>();
 
     List<AVAB__SO_Document__c> invoiceList = [
       SELECT Name, AVAB__Date__c, AVAB__Balance__c, AVAB__Contact__r.Name
@@ -16,7 +14,7 @@ public with sharing class PaymentsToInvoicesController {
     ];
 
     for (AVAB__SO_Document__c invoice : invoiceList) {
-      PaymentsToInvoicesController.invoiceDetailsWrapper invWrapper = new PaymentsToInvoicesController.invoiceDetailsWrapper();
+      PaymentsToInvoicesController.InvoiceDetailsWrapper invWrapper = new PaymentsToInvoicesController.InvoiceDetailsWrapper();
       invWrapper.invoice = invoice.Name;
       invWrapper.invoiceDate = invoice.AVAB__Date__c;
       invWrapper.contactName = invoice.AVAB__Contact__r.Name;
@@ -28,7 +26,7 @@ public with sharing class PaymentsToInvoicesController {
     return invoiceDetailsWrapperList;
   }
 
-  public class invoiceDetailsWrapper {
+  public class InvoiceDetailsWrapper {
     @AuraEnabled
     public String invoice { get; set; }
     @AuraEnabled
@@ -39,7 +37,7 @@ public with sharing class PaymentsToInvoicesController {
     public Decimal balance { get; set; }
   }
 
-  public class paymentDetailsWrapper {
+  public class PaymentDetailsWrapper {
     @AuraEnabled
     public String paymentID { get; set; }
     @AuraEnabled
@@ -50,7 +48,7 @@ public with sharing class PaymentsToInvoicesController {
 
   @AuraEnabled
   public static void applyPaymentToInvoice(
-    PaymentsToInvoicesController.paymentDetailsWrapper paymentWrapper
+    PaymentsToInvoicesController.PaymentDetailsWrapper paymentWrapper
   ) {
     String invoice = paymentWrapper.invoiceNumber;
     String paymentId = paymentWrapper.paymentID;
@@ -62,6 +60,7 @@ public with sharing class PaymentsToInvoicesController {
 
     System.debug('Invoice received ' + invoice);
     System.debug('Payment Id received ' + paymentId);
+
     if (amountToApply > 0) {
       List<AVAB__Payments__c> payments = [
         SELECT AVAB__Amount__c, AVAB__Payments_Applied__c
@@ -102,15 +101,6 @@ public with sharing class PaymentsToInvoicesController {
       try {
         insert paymentsList;
         update payments;
-        // AVAB__SO_Document__c insertedInvoice = [
-        //   SELECT AVAB__Balance__c
-        //   FROM AVAB__SO_Document__c
-        //   WHERE Id = :invID
-        // ];
-
-        //AVAB__Payments_to_Invoice__c paylist = [SELECT Name FROM AVAB__Payments_to_Invoice__c WHERE Id IN :paymentsList];
-        //System.debug('payments to invoice ' + paylist);
-        //System.debug('Updated Invoice Balance ' + insertedInvoice);
       } catch (Exception e) {
         System.debug('Error occured ' + e.getMessage());
       }
