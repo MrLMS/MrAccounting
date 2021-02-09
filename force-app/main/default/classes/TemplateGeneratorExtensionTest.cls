@@ -134,6 +134,7 @@ public class TemplateGeneratorExtensionTest {
       AVAB__AR_Transaction__c = soDoc.Id,
       AVAB__Product__c = item.Id,
       AVAB__Quantity__c = 2,
+      AVAB__Product_Description__c = 'Test Desc',
       AVAB__Sales_Price__c = 1495,
       ABTS__Task__c = tskObj1.Id
     );
@@ -154,6 +155,7 @@ public class TemplateGeneratorExtensionTest {
       AVAB__AR_Transaction__c = soDoc.Id,
       AVAB__Product__c = item.Id,
       AVAB__Quantity__c = 2,
+      AVAB__Product_Description__c = 'Test Desc',
       AVAB__Sales_Price__c = 1495
     );
     //insert tliAR3;
