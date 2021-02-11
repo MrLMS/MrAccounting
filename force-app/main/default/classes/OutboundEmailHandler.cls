@@ -36,7 +36,7 @@ public with sharing class OutboundEmailHandler {
         b = pageref.getContent();
       }
       cv.VersionData = b;
-      cv.Title = 'Mon Invoice';
+      cv.Title = 'Client Invoice';
       cv.PathOnClient = 'Invoice.pdf';
       cv.ContentLocation = 'S';
       cv.Description = 'Customer invoice';
@@ -75,7 +75,7 @@ public with sharing class OutboundEmailHandler {
       EmailMessage emailMessage = new EmailMessage();
       //emailMessage.status = '3';
       emailMessage.relatedToId = '0010m00000a4I2j';
-      //emailMessage.fromAddress = 'mraccounting@momrelaunch.com';
+
       emailMessage.fromName = 'MR Accounting';
       emailMessage.subject = subject;
       emailMessage.CcAddress = 'paulawambui@yahoo.com';
@@ -93,7 +93,7 @@ public with sharing class OutboundEmailHandler {
       cdLink.ContentDocumentId = conDocument;
       cdLink.LinkedEntityId = '0030m00000aenXS';
       // cdLink.Visibility = 'InternalUsers';
-      cdLink.ShareType = 'I';
+      cdLink.ShareType = 'V';
       insert cdLink;
 
       EmailMessageRelation emr = new EmailMessageRelation();

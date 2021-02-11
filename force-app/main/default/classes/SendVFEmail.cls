@@ -1,47 +1,94 @@
 public class SendVFEmail {
-    @future(callout=true)
-    public static void sendBatchInvoices(List<String> accList){
-        //public  void sendBatchInvoices(){   
-        System.debug('Got the accounts  list' + accList);
-        String sMessage = '';
-        //List<String> accList = new List<String> {'a2D0m000002PjBlEAK', 'a2D0m000002PjBmEAK', 'a2D0m000002PjBnEAK', 'a2D0m000002PjBoEAK', 'a2D0m000002PjBpEAK'};
-        for(String acc :  accList){
-             try{   
-                AVAB__SO_Document__c  rec =  [SELECT AVAB__Contact__c FROM AVAB__SO_Document__c WHERE id = : acc];
-                Contact c = [SELECT Email FROM Contact WHERE id = : rec.AVAB__Contact__c];
-                String contEmail = c.Email;
-                System.debug('Current Invoice '+ acc);
-                
-                Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
-                Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
-                // Replace Visualforce(AccountDetails) page with your visualforce page
-                
-                PageReference pageref = new PageReference('/apex/ManualTemplateGeneratorXX?id=' + acc);
-            
-                Blob b;
-                if(Test.isRunningTest()){
-                    b = blob.valueOf('Unit.Test');
-                }
-                else {
-               
-                    b = pageref.getContentAsPDF();
-                }
-                 attach.setFileName('Invoice.pdf');
-                 attach.setBody(b);
-                 semail.setSubject('Account Details');
-                 semail.setToAddresses(new List<String>{contEmail});
-                 semail.setPlainTextBody('Please find the attached Invoice');
-                 semail.setFileAttachments(new Messaging.EmailFileAttachment[]{attach});
-                 Messaging.sendEmail(new Messaging.SingleEmailMessage[]{semail});
-                 
-                 System.debug('Email Sent Successfully!');
-                
-             }
-            catch(Exception ex){
-                sMessage=ex.getMessage()+'\n'+ex.getLineNumber()+'\n'+ex.getCause();
-                System.debug('Error ' + sMessage);
-            }
-         }
+  @future(callout=true)
+  public static void sendBatchInvoices(List<String> accList) {
+    Map<String, String> emailDetails = new Map<String, String>();
+    String subject = 'Account Details';
+    String ccAddress = '';
+    String bccAddress = '';
+    String body = 'Please find the attached Invoice';
 
-	}
+    System.debug('Got the accounts  list' + accList);
+    String sMessage = '';
+
+    for (String acc : accList) {
+      try {
+        AVAB__SO_Document__c rec = [
+          SELECT AVAB__Contact__c, AVAB__Account__c
+          FROM AVAB__SO_Document__c
+          WHERE id = :acc
+        ];
+        String accID = rec.AVAB__Account__c;
+        Contact c = [
+          SELECT Email
+          FROM Contact
+          WHERE id = :rec.AVAB__Contact__c
+        ];
+        String contEmail = c.Email;
+        String contactID = c.Id;
+        System.debug('Current Invoice ' + acc);
+
+        Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
+        // Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
+        // Replace Visualforce(AccountDetails) page with your visualforce page
+
+        PageReference pageref = new PageReference(
+          '/apex/ManualTemplateGeneratorXX?id=' + acc
+        );
+
+        Blob b;
+        ContentVersion cv = new ContentVersion();
+        if (Test.isRunningTest()) {
+          b = blob.valueOf('Unit.Test');
+        } else {
+          b = pageref.getContentAsPDF();
+        }
+        //attach.setFileName('Invoice.pdf');
+        //attach.setBody(b);
+        cv.VersionData = b;
+        cv.Title = 'Client Invoice';
+        cv.PathOnClient = 'Invoice.pdf';
+        cv.ContentLocation = 'S';
+        cv.Description = 'Customer invoice';
+        cv.IsMajorVersion = true;
+        insert cv;
+
+        Id contentDocID = [
+          SELECT ContentDocumentId
+          FROM ContentVersion
+          WHERE Id = :cv.Id
+        ]
+        .ContentDocumentId;
+
+        semail.setEntityAttachments(new List<Id>{ cv.Id });
+        semail.setSubject(subject);
+        semail.setToAddresses(new List<String>{ contEmail });
+        semail.setPlainTextBody(body);
+        //semail.setFileAttachments(new Messaging.EmailFileAttachment[]{attach});
+        Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ semail });
+
+        emailDetails.put('AccountID', accID);
+        emailDetails.put('ContentDocID', contentDocID);
+        emailDetails.put('Mail', contEmail);
+        emailDetails.put('ContactID', contactID);
+        emailDetails.put('Subject', subject);
+        emailDetails.put('CCAddress', ccAddress);
+        emailDetails.put('BccAddress', bccAddress);
+        emailDetails.put('Body', body);
+
+        System.debug('Map sent ' + emailDetails.size());
+
+        LogOutboundEmailHandler.createEmailMessage(emailDetails);
+
+        System.debug('Email Sent Successfully!');
+      } catch (Exception ex) {
+        sMessage =
+          ex.getMessage() +
+          '\n' +
+          ex.getLineNumber() +
+          '\n' +
+          ex.getCause();
+        System.debug('Error ' + sMessage);
+      }
+    }
+  }
 }

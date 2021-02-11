@@ -20,6 +20,7 @@ private class PaymentsToInvoicesControllerTest {
     acc.Name = 'Test acc';
 
     insert acc;
+    String accID = acc.Id;
 
     for (Integer j = 0; j < 3; j++) {
       Contact c = new Contact();
@@ -41,6 +42,7 @@ private class PaymentsToInvoicesControllerTest {
 
       invList.add(invoice);
     }
+    insert invList;
 
     List<AVAB__SO_Document__c> insertedInvoices = [
       SELECT Id
@@ -56,20 +58,38 @@ private class PaymentsToInvoicesControllerTest {
 
     try {
       update insertedInvoices;
+      System.debug('invoices ' + insertedInvoices);
+
+      List<AVAB__SO_Document__c> retrievedInvoices = [
+        SELECT Id, AVAB__Balance__c
+        FROM AVAB__SO_Document__c
+        WHERE Id IN :insertedInvoices
+      ];
+      System.debug('number of invoices ' + retrievedInvoices.size());
     } catch (Exception e) {
       System.debug('Error found ' + e.getMessage());
     }
 
     //====================================================================================================
 
+    List<AVAB__Payments_to_Invoice__c> paymentsList = new List<AVAB__Payments_to_Invoice__c>();
     PaymentsToInvoicesController.PaymentDetailsWrapper paymentWrapper = new PaymentsToInvoicesController.PaymentDetailsWrapper();
+    PaymentsToInvoicesController.PaymentDetailsWrapper paymentWrapper2 = new PaymentsToInvoicesController.PaymentDetailsWrapper();
     paymentWrapper.paymentID = 'a280m000001GdQU';
     paymentWrapper.invoiceNumber = '736952';
-    paymentWrapper.applyAmount = 30;
+    paymentWrapper.applyAmount = 90;
+
+    paymentWrapper2.paymentID = 'a280m000001GdQU';
+    paymentWrapper2.invoiceNumber = '736952';
+    paymentWrapper2.applyAmount = 0;
 
     String paymentID = paymentWrapper.paymentID;
     String invoiceNumber = paymentWrapper.invoiceNumber;
     Decimal amountToApply = paymentWrapper.applyAmount;
+
+    String paymentID2 = paymentWrapper2.paymentID;
+    String invoiceNumber2 = paymentWrapper2.invoiceNumber;
+    Decimal amountToApply2 = paymentWrapper2.applyAmount;
 
     AVAB__GL_Account__c glAcc = new AVAB__GL_Account__c();
     glAcc.Name = 'Test GLAccount';
@@ -81,36 +101,42 @@ private class PaymentsToInvoicesControllerTest {
     pay.AVAB__Transaction_Date_Time__c = Datetime.now();
     pay.AVAB__GL_Account__c = glAcc.Id;
     pay.AVAB__Date__c = Date.today();
-    pay.AVAB__Amount__c = 100;
+    pay.AVAB__Amount__c = 500;
     pay.AVAB__Payments_Applied__c = null;
 
     insert pay;
+    System.debug('applied pay1 ' + pay);
 
     AVAB__Payments__c pay2 = new AVAB__Payments__c();
     pay2.AVAB__Account_Name__c = acc.Id;
     pay2.AVAB__Transaction_Date_Time__c = Datetime.now();
     pay2.AVAB__GL_Account__c = glAcc.Id;
     pay2.AVAB__Date__c = Date.today();
-    pay2.AVAB__Amount__c = 50;
-    pay2.AVAB__Payments_Applied__c = 10;
+    pay2.AVAB__Amount__c = 100;
+    pay2.AVAB__Payments_Applied__c = 90;
 
     insert pay2;
+    System.debug('applied pay2 ' + pay2);
 
     AVAB__Payments__c pay3 = new AVAB__Payments__c();
     pay3.AVAB__Account_Name__c = acc.Id;
     pay3.AVAB__Transaction_Date_Time__c = Datetime.now();
     pay3.AVAB__GL_Account__c = glAcc.Id;
     pay3.AVAB__Date__c = Date.today();
-    pay3.AVAB__Amount__c = 30;
-    pay3.AVAB__Payments_Applied__c = 30;
+    pay3.AVAB__Amount__c = 100;
+    pay3.AVAB__Payments_Applied__c = 100;
 
     insert pay3;
+    System.debug('applied pay3 ' + pay3);
 
     Test.startTest();
     List<PaymentsToInvoicesController.invoiceDetailsWrapper> paymentTest = PaymentsToInvoicesController.getPaymentsToInvoice(
       acc.Id
     );
     PaymentsToInvoicesController.applyPaymentToInvoice(paymentWrapper);
+    PaymentsToInvoicesController.applyPaymentToInvoice(paymentWrapper2);
     Test.stopTest();
+
+    System.assertEquals(3, invList.size(), 'Incorrect number of invoices');
   }
 }

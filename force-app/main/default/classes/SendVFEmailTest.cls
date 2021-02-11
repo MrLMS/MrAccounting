@@ -2,6 +2,10 @@
 private class SendVFEmailTest {
   @IsTest
   static void sendInvoiceEmailTest() {
+    String ccAddress = '';
+    String bccAddress = '';
+    String body = 'Please find the attached Invoice';
+
     Account a = new Account();
     a.Name = 'Test acc';
 

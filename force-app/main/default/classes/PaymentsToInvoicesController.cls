@@ -75,30 +75,29 @@ public with sharing class PaymentsToInvoicesController {
 
       System.debug('applied payements ' + payments);
       System.debug('List inv ' + selectedInvoices);
+      try {
+        for (AVAB__Payments__c payment : payments) {
+          for (AVAB__SO_Document__c inv : selectedInvoices) {
+            if (payment.AVAB__Payments_Applied__c == null) {
+              payment.AVAB__Payments_Applied__c = 0;
+            }
 
-      for (AVAB__Payments__c payment : payments) {
-        for (AVAB__SO_Document__c inv : selectedInvoices) {
-          if (payment.AVAB__Payments_Applied__c == null) {
-            payment.AVAB__Payments_Applied__c = 0;
-          }
+            if (payment.AVAB__Payments_Applied__c < payment.AVAB__Amount__c) {
+              AVAB__Payments_to_Invoice__c newPayment = new AVAB__Payments_to_Invoice__c();
+              newPayment.AVAB__Receivable__c = inv.Id;
+              newPayment.AVAB__Amount__c = amountToApply;
+              newPayment.AVAB__Payment__c = payment.Id;
 
-          if (payment.AVAB__Payments_Applied__c < payment.AVAB__Amount__c) {
-            AVAB__Payments_to_Invoice__c newPayment = new AVAB__Payments_to_Invoice__c();
-            newPayment.AVAB__Receivable__c = inv.Id;
-            newPayment.AVAB__Amount__c = amountToApply;
-            newPayment.AVAB__Payment__c = payment.Id;
+              //invID = inv.Id;
 
-            invID = inv.Id;
-
-            payment.AVAB__Payments_Applied__c = amountToApply;
-            paymentsList.add(newPayment);
-          } else {
-            System.debug('You have over applied payments');
+              payment.AVAB__Payments_Applied__c = amountToApply;
+              paymentsList.add(newPayment);
+            } else {
+              System.debug('You have over applied payments');
+            }
           }
         }
-      }
 
-      try {
         insert paymentsList;
         update payments;
       } catch (Exception e) {

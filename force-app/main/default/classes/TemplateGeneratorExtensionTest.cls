@@ -9,29 +9,28 @@ public class TemplateGeneratorExtensionTest {
   static TMS__Timesheet__c timeSheet;
   static TMS__Task__c tskObj, tskObj1, tskObj2;
   static RecordType rectype, invoiceRT, custRecType;
+  static Id invRecTypeId, custRecTypeId;
 
   static testMethod void TemplateGeneratorExtensionTest() {
-    List<RecordType> recs;
-    recs = [SELECT id FROM RecordType WHERE Name = :'Invoice'];
+    //List<RecordType> recs;
+    //recs = [select id from RecordType where Name =:'Invoice'];
+    invRecTypeId = Schema.SObjectType.AVAB__SO_Document__c.getRecordTypeInfosByName()
+      .get('Invoice')
+      .getRecordTypeId();
+    custRecTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName()
+      .get('Customer')
+      .getRecordTypeId();
     List<SObject> sObjList = new List<SObject>();
-    invoiceRT = recs == null ||
-      recs.size() == 0
-      ? new RecordType(Name = 'Invoice')
-      : recs.get(0);
 
-    recs = [
-      SELECT id, Name
-      FROM RecordType
-      WHERE Name = 'Customer' AND SobjectType = 'Account'
-    ];
-    custRecType = recs == null ||
-      recs.size() == 0
-      ? new RecordType(Name = 'Customer', SobjectType = 'Account')
-      : recs.get(0);
+    //recs = [select id, Name from RecordType where Name ='Customer' AND SobjectType='Account'];
+    // custRecType = recs == null || recs.size()==0?
+    //                 new RecordType(Name='Customer', SobjectType='Account')
+    //                 :recs.get(0);
 
+    System.debug('custRT ' + custRecTypeId);
     accSoDoc = new Account(
       Name = 'TestCustomerAcc',
-      RecordTypeId = custRecType.Id,
+      RecordTypeId = custRecTypeId,
       BillingCity = 'TestCity'
     );
     //insert accSoDoc;
@@ -90,7 +89,7 @@ public class TemplateGeneratorExtensionTest {
 
     soDoc = new AVAB__SO_Document__c(
       AVAB__Status__c = 'Post',
-      RecordTypeId = invoicert.Id,
+      RecordTypeId = invRecTypeId,
       AVAB__Date__c = Date.newInstance(2015, 4, 10),
       AVAB__Due_Date__c = Date.newInstance(2015, 4, 10),
       AVAB__Billing_Address_1__c = 'PO Box-1234',
@@ -122,6 +121,7 @@ public class TemplateGeneratorExtensionTest {
 
     tliAR = new AVAB__Transaction_Line_Items__c(
       AVAB__AR_Transaction__c = soDoc.Id,
+      AVAB__Product_Description__c = 'Test Desc',
       AVAB__Product__c = item.Id,
       AVAB__Quantity__c = 2,
       AVAB__Sales_Price__c = 1495,
@@ -134,7 +134,6 @@ public class TemplateGeneratorExtensionTest {
       AVAB__AR_Transaction__c = soDoc.Id,
       AVAB__Product__c = item.Id,
       AVAB__Quantity__c = 2,
-      AVAB__Product_Description__c = 'Test Desc',
       AVAB__Sales_Price__c = 1495,
       ABTS__Task__c = tskObj1.Id
     );
@@ -155,7 +154,6 @@ public class TemplateGeneratorExtensionTest {
       AVAB__AR_Transaction__c = soDoc.Id,
       AVAB__Product__c = item.Id,
       AVAB__Quantity__c = 2,
-      AVAB__Product_Description__c = 'Test Desc',
       AVAB__Sales_Price__c = 1495
     );
     //insert tliAR3;

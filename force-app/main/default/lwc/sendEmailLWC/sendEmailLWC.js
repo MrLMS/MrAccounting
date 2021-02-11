@@ -72,6 +72,7 @@ export default class SendEmailLWC extends LightningElement {
   handleSend() {
     let parameterObject = {
       contEmail: this.toEmail,
+      contactName: this.contactName,
       addTo: this.additionalTo,
       acc: this.recordId,
       ccEmail: this.CC,
@@ -107,7 +108,7 @@ export default class SendEmailLWC extends LightningElement {
       })
       .catch((err) => {
         this.error = err;
-        console.log("Error occured " + err);
+        console.log("Error occured " + err.body.message);
         //console.log("Error occured ");
       });
   }
