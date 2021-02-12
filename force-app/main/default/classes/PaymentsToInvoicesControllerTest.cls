@@ -9,6 +9,7 @@ private class PaymentsToInvoicesControllerTest {
     wrapper.balance = 100;
 
     List<PaymentsToInvoicesController.InvoiceDetailsWrapper> wrapperList = new List<PaymentsToInvoicesController.InvoiceDetailsWrapper>();
+    List<String> listOfInvoices = new List<String>();
 
     wrapperList.add(wrapper);
 
@@ -61,10 +62,15 @@ private class PaymentsToInvoicesControllerTest {
       System.debug('invoices ' + insertedInvoices);
 
       List<AVAB__SO_Document__c> retrievedInvoices = [
-        SELECT Id, AVAB__Balance__c
+        SELECT Id, Name, AVAB__Balance__c
         FROM AVAB__SO_Document__c
         WHERE Id IN :insertedInvoices
       ];
+
+      for (AVAB__SO_Document__c invoice : retrievedInvoices) {
+        String invNum = invoice.Name;
+        listOfInvoices.add(invNum);
+      }
       System.debug('number of invoices ' + retrievedInvoices.size());
     } catch (Exception e) {
       System.debug('Error found ' + e.getMessage());
@@ -76,12 +82,15 @@ private class PaymentsToInvoicesControllerTest {
     PaymentsToInvoicesController.PaymentDetailsWrapper paymentWrapper = new PaymentsToInvoicesController.PaymentDetailsWrapper();
     PaymentsToInvoicesController.PaymentDetailsWrapper paymentWrapper2 = new PaymentsToInvoicesController.PaymentDetailsWrapper();
     paymentWrapper.paymentID = 'a280m000001GdQU';
-    paymentWrapper.invoiceNumber = '736952';
+    paymentWrapper.invoiceNumber = listOfInvoices[0];
     paymentWrapper.applyAmount = 90;
 
     paymentWrapper2.paymentID = 'a280m000001GdQU';
-    paymentWrapper2.invoiceNumber = '736952';
+    paymentWrapper2.invoiceNumber = listOfInvoices[1];
     paymentWrapper2.applyAmount = 0;
+
+    System.debug('Invoice 1 is' + paymentWrapper.invoiceNumber);
+    System.debug('Invoice 2 is ' + paymentWrapper2.invoiceNumber);
 
     String paymentID = paymentWrapper.paymentID;
     String invoiceNumber = paymentWrapper.invoiceNumber;

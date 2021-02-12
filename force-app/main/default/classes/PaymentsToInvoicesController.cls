@@ -73,7 +73,7 @@ public with sharing class PaymentsToInvoicesController {
         WHERE Name = :invoice
       ];
 
-      System.debug('applied payements ' + payments);
+      System.debug('applied payments ' + payments);
       System.debug('List inv ' + selectedInvoices);
       try {
         for (AVAB__Payments__c payment : payments) {

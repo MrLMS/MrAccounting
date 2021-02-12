@@ -9,116 +9,119 @@ public with sharing class OutboundEmailHandler {
     String body = 'email to salesforce testing';
     String stripHtmlBody = body.stripHtmlTags();
 
-    List<String> mailList = new List<String>();
-    if (mail != null) {
-      mailList.add(mail);
-    }
-    if (!(String.isBlank(addTo))) {
-      mailList.add(addTo);
-    }
+    Datetime todaysDate = Datetime.now();
+    System.debug('Month ' + todaysDate.format('MMMM'));
 
-    String sMessage = '';
-    String msg = 'Sent sucessfully';
+    // List<String> mailList = new List<String>();
+    // if (mail != null) {
+    //   mailList.add(mail);
+    // }
+    // if (!(String.isBlank(addTo))) {
+    //   mailList.add(addTo);
+    // }
 
-    try {
-      Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
-      //Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
+    // String sMessage = '';
+    // String msg = 'Sent sucessfully';
 
-      PageReference pageref = new PageReference(
-        '/apex/ManualTemplateGeneratorXX?id=' + acc
-      );
+    // try {
+    //   Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
+    //   //Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
 
-      Blob b;
-      ContentVersion cv = new ContentVersion();
-      if (Test.isRunningTest()) {
-        b = blob.valueOf('Unit.Test');
-      } else {
-        b = pageref.getContent();
-      }
-      cv.VersionData = b;
-      cv.Title = 'Client Invoice';
-      cv.PathOnClient = 'Invoice.pdf';
-      cv.ContentLocation = 'S';
-      cv.Description = 'Customer invoice';
-      cv.IsMajorVersion = true;
-      insert cv;
+    //   PageReference pageref = new PageReference(
+    //     '/apex/ManualTemplateGeneratorXX?id=' + acc
+    //   );
 
-      Id conDocument = [
-        SELECT ContentDocumentId
-        FROM ContentVersion
-        WHERE Id = :cv.Id
-      ]
-      .ContentDocumentId;
-      System.debug('CD id ' + conDocument);
+    //   Blob b;
+    //   ContentVersion cv = new ContentVersion();
+    //   if (Test.isRunningTest()) {
+    //     b = blob.valueOf('Unit.Test');
+    //   } else {
+    //     b = pageref.getContent();
+    //   }
+    //   cv.VersionData = b;
+    //   cv.Title = 'Client Invoice';
+    //   cv.PathOnClient = 'Invoice.pdf';
+    //   cv.ContentLocation = 'S';
+    //   cv.Description = 'Customer invoice';
+    //   cv.IsMajorVersion = true;
+    //   insert cv;
 
-      // attach.setFileName('Invoice.pdf');
-      //attach.setBody(b);
-      semail.setEntityAttachments(new List<Id>{ cv.Id });
-      semail.setSubject('Account Details');
-      if (mailList.size() > 0) {
-        semail.setToAddresses(mailList);
-      }
+    //   Id conDocument = [
+    //     SELECT ContentDocumentId
+    //     FROM ContentVersion
+    //     WHERE Id = :cv.Id
+    //   ]
+    //   .ContentDocumentId;
+    //   System.debug('CD id ' + conDocument);
 
-      if (!(String.isBlank(ccEmail))) {
-        semail.setCcAddresses(new List<String>{ ccEmail });
-      }
-      semail.setBccAddresses(new List<String>{ bccEmail });
+    //   // attach.setFileName('Invoice.pdf');
+    //   //attach.setBody(b);
+    //   semail.setEntityAttachments(new List<Id>{ cv.Id });
+    //   semail.setSubject('Account Details');
+    //   if (mailList.size() > 0) {
+    //     semail.setToAddresses(mailList);
+    //   }
 
-      semail.setPlainTextBody(stripHtmlBody);
-      // semail.setFileAttachments(new List<Messaging.EmailFileAttachment>{ attach });
+    //   if (!(String.isBlank(ccEmail))) {
+    //     semail.setCcAddresses(new List<String>{ ccEmail });
+    //   }
+    //   semail.setBccAddresses(new List<String>{ bccEmail });
 
-      Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ semail });
-      System.debug('Email Sent Successfully!');
+    //   semail.setPlainTextBody(stripHtmlBody);
+    //   // semail.setFileAttachments(new List<Messaging.EmailFileAttachment>{ attach });
 
-      //============================================================================
+    //   Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ semail });
+    //   System.debug('Email Sent Successfully!');
 
-      EmailMessage emailMessage = new EmailMessage();
-      //emailMessage.status = '3';
-      emailMessage.relatedToId = '0010m00000a4I2j';
+    //   //============================================================================
 
-      emailMessage.fromName = 'MR Accounting';
-      emailMessage.subject = subject;
-      emailMessage.CcAddress = 'paulawambui@yahoo.com';
-      emailMessage.BccAddress = 'emailtosalesforce@r-293i2f270udi74o377e72fx4oekf8b5myp66ia5k8o8566qiwy.0m-a4x7eak.cs65.le.sandbox.salesforce.com';
-      emailMessage.htmlBody = '<html><body><b>Testing tracking outbound email.</b></body></html>';
+    //   EmailMessage emailMessage = new EmailMessage();
+    //   //emailMessage.status = '3';
+    //   emailMessage.relatedToId = '0010m00000a4I2j';
 
-      String[] toIds = new List<String>{ '0030m00000aenXS' };
-      emailMessage.toIds = toIds;
+    //   emailMessage.fromName = 'MR Accounting';
+    //   emailMessage.subject = subject;
+    //   emailMessage.CcAddress = 'paulawambui@yahoo.com';
+    //   emailMessage.BccAddress = 'emailtosalesforce@r-293i2f270udi74o377e72fx4oekf8b5myp66ia5k8o8566qiwy.0m-a4x7eak.cs65.le.sandbox.salesforce.com';
+    //   emailMessage.htmlBody = '<html><body><b>Testing tracking outbound email.</b></body></html>';
 
-      emailMessage.toAddress = mail;
-      insert emailMessage;
-      String emId = emailMessage.Id;
+    //   String[] toIds = new List<String>{ '0030m00000aenXS' };
+    //   emailMessage.toIds = toIds;
 
-      ContentDocumentLink cdLink = new ContentDocumentLink();
-      cdLink.ContentDocumentId = conDocument;
-      cdLink.LinkedEntityId = '0030m00000aenXS';
-      // cdLink.Visibility = 'InternalUsers';
-      cdLink.ShareType = 'V';
-      insert cdLink;
+    //   emailMessage.toAddress = mail;
+    //   insert emailMessage;
+    //   String emId = emailMessage.Id;
 
-      EmailMessageRelation emr = new EmailMessageRelation();
-      emr.emailMessageId = emailMessage.id;
-      emr.relationId = '0030m00000aenXS';
-      emr.relationType = 'FromAddress';
-      insert emr;
+    //   ContentDocumentLink cdLink = new ContentDocumentLink();
+    //   cdLink.ContentDocumentId = conDocument;
+    //   cdLink.LinkedEntityId = '0030m00000aenXS';
+    //   // cdLink.Visibility = 'InternalUsers';
+    //   cdLink.ShareType = 'V';
+    //   insert cdLink;
 
-      EmailMessage insertedEmail = [
-        SELECT status
-        FROM EmailMessage
-        WHERE Id = :emId
-      ];
-      insertedEmail.status = '3';
+    //   EmailMessageRelation emr = new EmailMessageRelation();
+    //   emr.emailMessageId = emailMessage.id;
+    //   emr.relationId = '0030m00000aenXS';
+    //   emr.relationType = 'FromAddress';
+    //   insert emr;
 
-      update insertedEmail;
-    } catch (Exception ex) {
-      sMessage =
-        ex.getMessage() +
-        '\n' +
-        ex.getLineNumber() +
-        '\n' +
-        ex.getCause();
-      System.debug('Error ' + sMessage);
-    }
+    //   EmailMessage insertedEmail = [
+    //     SELECT status
+    //     FROM EmailMessage
+    //     WHERE Id = :emId
+    //   ];
+    //   insertedEmail.status = '3';
+
+    //   update insertedEmail;
+    // } catch (Exception ex) {
+    //   sMessage =
+    //     ex.getMessage() +
+    //     '\n' +
+    //     ex.getLineNumber() +
+    //     '\n' +
+    //     ex.getCause();
+    //   System.debug('Error ' + sMessage);
+    // }
     //return msg;
   }
 }

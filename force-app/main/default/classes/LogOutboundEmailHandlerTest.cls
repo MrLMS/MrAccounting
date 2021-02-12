@@ -108,8 +108,6 @@ private class LogOutboundEmailHandlerTest {
     insert emailMessage;
 
     String emId = emailMessage.Id;
-    // ContentDocumentLink cdLink = new ContentDocumentLink();
-    // EmailMessageRelation emr = new EmailMessageRelation();
 
     Map<String, String> emailDetails = new Map<String, String>();
     Map<String, String> emptyMap = new Map<String, String>();

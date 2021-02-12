@@ -3,9 +3,12 @@ public class SendVFEmail {
   public static void sendBatchInvoices(List<String> accList) {
     Map<String, String> emailDetails = new Map<String, String>();
     String subject = 'Account Details';
+    String contactName;
     String ccAddress = '';
     String bccAddress = '';
     String body = 'Please find the attached Invoice';
+    Datetime todaysDate = Datetime.now();
+    String month = todaysDate.format('MMMM');
 
     System.debug('Got the accounts  list' + accList);
     String sMessage = '';
@@ -19,13 +22,21 @@ public class SendVFEmail {
         ];
         String accID = rec.AVAB__Account__c;
         Contact c = [
-          SELECT Email
+          SELECT Name, Email
           FROM Contact
           WHERE id = :rec.AVAB__Contact__c
         ];
         String contEmail = c.Email;
         String contactID = c.Id;
+        contactName = c.Name;
         System.debug('Current Invoice ' + acc);
+
+        String messageBody =
+          '<html><body> Dear ' +
+          contactName +
+          ',<br/><br/> Please find the attached invoice for the month of ' +
+          month +
+          '.<br/><br/> Thank you for your business! <br/><br/> Mom Relaunch</body>  </html>';
 
         Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
         // Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
@@ -62,7 +73,9 @@ public class SendVFEmail {
         semail.setEntityAttachments(new List<Id>{ cv.Id });
         semail.setSubject(subject);
         semail.setToAddresses(new List<String>{ contEmail });
-        semail.setPlainTextBody(body);
+        semail.setHtmlBody(messageBody);
+        //semail.setPlainTextBody(body);
+
         //semail.setFileAttachments(new Messaging.EmailFileAttachment[]{attach});
         Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ semail });
 
@@ -73,7 +86,7 @@ public class SendVFEmail {
         emailDetails.put('Subject', subject);
         emailDetails.put('CCAddress', ccAddress);
         emailDetails.put('BccAddress', bccAddress);
-        emailDetails.put('Body', body);
+        emailDetails.put('Body', messageBody);
 
         System.debug('Map sent ' + emailDetails.size());
 
