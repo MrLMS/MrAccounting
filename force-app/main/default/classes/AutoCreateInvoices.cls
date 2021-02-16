@@ -15,6 +15,10 @@ public class AutoCreateInvoices {
         Membership_Type__c IN ('Training Membership', 'LaunchPad Membership')
         AND Launchpad_Membership_Fees_Waived__c = FALSE
         AND AVTRRT__Candidate_Status__c = 'Active'
+        AND Membership_Product__r.Name IN (
+          'Launch Pad Membership',
+          'Training Membership'
+        )
     ];
 
     List<AVAB__Item__c> itemIDs = new List<AVAB__Item__c>();

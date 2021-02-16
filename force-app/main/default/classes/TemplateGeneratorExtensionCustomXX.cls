@@ -55,7 +55,7 @@ global with sharing class TemplateGeneratorExtensionCustomXX {
     System.debug('>>>tlItems' + tlItems);
 
     soDoc = [
-      SELECT Id, AVAB__Amount__c, AVAB__Tax_Rate__c
+      SELECT Id, AVAB__Amount__c, AVAB__Tax_Rate__c, AVAB__Payments_Received__c
       FROM AVAB__SO_Document__c
       WHERE Id = :sod.Id
     ];

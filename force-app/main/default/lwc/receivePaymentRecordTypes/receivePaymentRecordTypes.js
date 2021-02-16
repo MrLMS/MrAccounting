@@ -38,5 +38,6 @@ export default class RecordTypesInLWC extends LightningElement {
   // Handling on change value
   handleChange(event) {
     this.selectedValue = event.detail.value;
+    console.log("Selected value in rectype " + this.selectedValue);
   }
 }
