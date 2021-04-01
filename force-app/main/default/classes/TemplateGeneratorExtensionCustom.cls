@@ -55,7 +55,7 @@ global with sharing class TemplateGeneratorExtensionCustom {
     System.debug('>>>tlItems' + tlItems);
 
     soDoc = [
-      SELECT Id, AVAB__Amount__c, AVAB__Tax_Rate__c
+      SELECT Id, AVAB__Amount__c, AVAB__Tax_Rate__c, AVAB__Payments_Received__c
       FROM AVAB__SO_Document__c
       WHERE Id = :sod.Id
     ];
@@ -68,6 +68,7 @@ global with sharing class TemplateGeneratorExtensionCustom {
       List<TMS__Time__c> timesInvoice = tlitem.ABTS__Time__r;
 
       if (!timesInvoice.isEmpty()) {
+        System.debug('timesInvoice ' + timesInvoice);
         obj.name = timesInvoice.get(0).TMS__Resource__c;
         System.debug('>>>obj.name' + obj.name);
         obj.prodName = tlitem.AVAB__Product__r.Name;
@@ -75,17 +76,17 @@ global with sharing class TemplateGeneratorExtensionCustom {
         obj.taskName = timesInvoice.get(0).TMS__Task__r.Name;
         obj.salesPrice = tlitem.AVAB__Sales_Price__c;
         obj.total = tlitem.AVAB__Total_Sales_Price__c;
-        weekManagementId = timesInvoice.get(0).TMS__Week_Management__c;
-        System.debug('>>>weekManagementId' + weekManagementId);
+        //weekManagementId = timesInvoice.get(0).TMS__Week_Management__c;
+        //System.debug('>>>weekManagementId' + weekManagementId);
 
-        TMS__Week_Management__c weekM;
-        weekM = [
-          SELECT Id, WeekCustom__c
-          FROM TMS__Week_Management__c
-          WHERE Id = :weekManagementId
-        ];
-        System.debug('weekM : ' + weekM);
-        obj.weekRange = weekM.WeekCustom__c;
+        // TMS__Week_Management__c weekM;
+        // weekM = [
+        //   SELECT Id, WeekCustom__c
+        //   FROM TMS__Week_Management__c
+        //   WHERE Id = :weekManagementId
+        // ];
+        //System.debug('weekM : ' + weekM);
+        //obj.weekRange = weekM.WeekCustom__c;
       }
       wrapperEmpList.add(obj);
     }

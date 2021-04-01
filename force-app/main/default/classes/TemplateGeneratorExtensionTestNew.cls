@@ -1,5 +1,5 @@
 @isTest
-public class TemplateGeneratorExtensionTest {
+public class TemplateGeneratorExtensionTestNew {
   static Account accSoDoc, accPoDoc;
   static Contact conObj;
   static AVAB__SO_Document__c soDoc;
@@ -60,14 +60,12 @@ public class TemplateGeneratorExtensionTest {
     //insert tskObj2;
     sObjList.add(tskObj2);
 
-    weekMgmt = new TMS__Week_Management__c();
-    weekMgmt.TMS__Start_Date__c = Date.newInstance(2015, 4, 5);
-    weekMgmt.TMS__End_Date__c = Date.newInstance(2015, 4, 12);
-    weekMgmt.TMS__Active__c = true;
-    String wkmgtId = weekMgmt.Id;
+    weekMgmt = new TMS__Week_Management__c(
+      TMS__Start_Date__c = Date.newInstance(2015, 4, 5),
+      TMS__End_Date__c = Date.newInstance(2015, 4, 12),
+      TMS__Active__c = true
+    );
     insert weekMgmt;
-    System.debug('Week Mngt Id found! ' + wkmgtId);
-
     //sObjList.add(weekMgmt);
 
     AVAB__Accounting_Settings__c accountSettings = new AVAB__Accounting_Settings__c(

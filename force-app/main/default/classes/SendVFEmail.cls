@@ -9,6 +9,7 @@ public class SendVFEmail {
     String body = 'Please find the attached Invoice';
     Datetime todaysDate = Datetime.now();
     String month = todaysDate.format('MMMM');
+    String dueDate = Date.today().format();
 
     System.debug('Got the accounts  list' + accList);
     String sMessage = '';
@@ -16,10 +17,11 @@ public class SendVFEmail {
     for (String acc : accList) {
       try {
         AVAB__SO_Document__c rec = [
-          SELECT AVAB__Contact__c, AVAB__Account__c
+          SELECT Name, AVAB__Contact__c, AVAB__Account__c
           FROM AVAB__SO_Document__c
           WHERE id = :acc
         ];
+        String invoiceNumber = rec.Name;
         String accID = rec.AVAB__Account__c;
         Contact c = [
           SELECT Name, Email
@@ -31,12 +33,22 @@ public class SendVFEmail {
         contactName = c.Name;
         System.debug('Current Invoice ' + acc);
 
+        // String messageBody =
+        //   '<html><body> Dear ' +
+        //   contactName +
+        //   ',<br/><br/> Please find the attached invoice for the month of ' +
+        //   month +
+        //   '.<br/><br/> Thank you for your business! <br/><br/> Mom Relaunch</body>  </html>';
+
         String messageBody =
           '<html><body> Dear ' +
           contactName +
-          ',<br/><br/> Please find the attached invoice for the month of ' +
-          month +
-          '.<br/><br/> Thank you for your business! <br/><br/> Mom Relaunch</body>  </html>';
+          ',<br/><br/> We hope you are well! <br/><br/> Please see invoice ' +
+          invoiceNumber +
+          ' attached. ' +
+          '<br/><br/> The invoice is due on ' +
+          dueDate +
+          '. <br/><br/>Please don’t hesitate to get in touch if you have any questions, or would like to clarify anything. <br/><br/> <br/> Best regards, <br/> Mom Relaunch Accounting</body>  </html>';
 
         Messaging.SingleEmailMessage semail = new Messaging.SingleEmailMessage();
         // Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();

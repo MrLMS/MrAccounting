@@ -5,6 +5,9 @@ private class SendVFEmailTest {
     String ccAddress = '';
     String bccAddress = '';
     String body = 'Please find the attached Invoice';
+    Datetime todaysDate = Datetime.now();
+    String month = todaysDate.format('MMMM');
+    String dueDate = Date.today().format();
 
     Account a = new Account();
     a.Name = 'Test acc';

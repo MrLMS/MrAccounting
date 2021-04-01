@@ -31,7 +31,7 @@ public class SendSingleVFEmail {
       //Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
 
       PageReference pageref = new PageReference(
-        '/apex/ManualTemplateGeneratorXX?id=' + acc
+        '/apex/Manual_Template_Generator?id=' + acc
       );
 
       Blob b;
@@ -74,6 +74,7 @@ public class SendSingleVFEmail {
       Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ semail });
 
       System.debug('Email Sent Successfully!');
+      System.debug('Contact name ' + contactName);
 
       //=====================================================================
       //Log email message
@@ -82,20 +83,26 @@ public class SendSingleVFEmail {
         FROM Contact
         WHERE Name = :contactName
       ];
-      contactID = contactDetails[0].Id;
+      if (contactDetails.size() > 0) {
+        contactID = contactDetails[0].Id;
 
-      emailDetails.put('AccountID', acc);
-      emailDetails.put('ContentDocID', contentDocID);
-      emailDetails.put('Mail', mail);
-      emailDetails.put('ContactID', contactID);
-      emailDetails.put('Subject', subject);
-      emailDetails.put('CcAddress', ccEmail);
-      emailDetails.put('BccAddress', bccAddress);
-      emailDetails.put('Body', body);
+        emailDetails.put('AccountID', acc);
+        emailDetails.put('ContentDocID', contentDocID);
+        emailDetails.put('Mail', mail);
+        emailDetails.put('ContactID', contactID);
+        emailDetails.put('Subject', subject);
+        emailDetails.put('CcAddress', ccEmail);
+        emailDetails.put('BccAddress', bccAddress);
+        emailDetails.put('Body', body);
 
-      System.debug('Map ' + emailDetails.size());
-
-      LogOutboundEmailHandler.createEmailMessage(emailDetails);
+        System.debug('Map ' + emailDetails.size());
+        if (!emailDetails.isEmpty()) {
+          LogOutboundEmailHandler.createEmailMessage(emailDetails);
+          System.debug('Called logOutboundEmailHandler ');
+        } else {
+          System.debug('Email details map is empty. Nothing to log!');
+        }
+      }
     } catch (Exception ex) {
       sMessage =
         ex.getMessage() +
@@ -103,7 +110,7 @@ public class SendSingleVFEmail {
         ex.getLineNumber() +
         '\n' +
         ex.getCause();
-      System.debug('Error ' + sMessage);
+      System.debug('Error found is: ' + sMessage);
     }
     return msg;
   }

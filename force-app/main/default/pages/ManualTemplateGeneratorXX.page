@@ -6,7 +6,7 @@
   title="{!AVAB__SO_Document__c.Name}"
   applyBodyTag="false"
   applyHtmlTag="false"
-  extensions="TemplateGeneratorExtensionCustomXX"
+  extensions="TemplateGeneratorExtensionCustom"
 >
   <head>
     <style>
@@ -182,6 +182,23 @@
           <apex:outputField value="{!AVAB__SO_Document__c.AVAB__Amount__c}" />
         </td>
       </tr>
+
+      <apex:outputText
+        rendered="{!IF(AVAB__SO_Document__c.AVAB__Payments_Received__c > 0,true,false)}"
+      >
+        <tr>
+          <td colspan="2" style="border: 0">&nbsp;</td>
+          <td style="border: 1px solid black; text-align: left">
+            <apex:outputText value="PAYMENT RECEIVED" />
+          </td>
+          <td style="border: 1px solid black; font-weight: bold">
+            <apex:outputField
+              value="{!AVAB__SO_Document__c.AVAB__Payments_Received__c}"
+            />
+          </td>
+        </tr>
+      </apex:outputText>
+
       <tr>
         <td colspan="2" style="border: 0">&nbsp;</td>
         <td style="border: 0; text-align: left; border-left: 1px solid black">
@@ -302,13 +319,6 @@
             <apex:outputText
               ><b>To Remit via Zelle,</b><br /><br
             /></apex:outputText>
-          </td>
-        </tr>
-        <tr>
-          <td style="border: 0"><b>Beneficiary:</b></td>
-          <td style="border: 0">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            Mom Relaunch LLC
           </td>
         </tr>
         <tr>

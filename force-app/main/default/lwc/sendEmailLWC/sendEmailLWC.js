@@ -82,6 +82,9 @@ export default class SendEmailLWC extends LightningElement {
 
     sendSingleEmailLWC({ params: parameterObject })
       .then((result) => {
+        console.log(
+          "Outgoing parameter object is " + JSON.stringify(parameterObject)
+        );
         console.log("Result is " + JSON.stringify(result));
         this.visible = true;
         // let delay = 1000
