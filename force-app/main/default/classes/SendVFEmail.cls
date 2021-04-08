@@ -55,7 +55,7 @@ public class SendVFEmail {
         // Replace Visualforce(AccountDetails) page with your visualforce page
 
         PageReference pageref = new PageReference(
-          '/apex/ManualTemplateGeneratorXX?id=' + acc
+          '/apex/Manual_Template_Generator?id=' + acc
         );
 
         Blob b;
@@ -64,6 +64,7 @@ public class SendVFEmail {
           b = blob.valueOf('Unit.Test');
         } else {
           b = pageref.getContentAsPDF();
+          System.debug('Page option ' + acc);
         }
         //attach.setFileName('Invoice.pdf');
         //attach.setBody(b);
